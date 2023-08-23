@@ -10,5 +10,3 @@ CREATE TABLE users (
   created_at DATETIME NOT NULL DEFAULT (NOW()),
   updated_at DATETIME NOT NULL DEFAULT (NOW())
 );
-
-DROP TABLE users;
