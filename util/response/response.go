@@ -11,13 +11,11 @@ type Response struct {
 }
 
 type Meta struct {
-	Success bool   `json:"success"`
 	Message string `json:"message"`
 }
 
 func Success(w *http.ResponseWriter, status int, data any) {
 	meta := Meta{
-		Success: true,
 		Message: "success",
 	}
 	res := Response{
@@ -30,7 +28,6 @@ func Success(w *http.ResponseWriter, status int, data any) {
 
 func Fail(w *http.ResponseWriter, status int, errorMessage string) {
 	meta := Meta{
-		Success: false,
 		Message: errorMessage,
 	}
 	res := Response{
