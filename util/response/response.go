@@ -14,7 +14,7 @@ type Meta struct {
 	Message string `json:"message"`
 }
 
-func Success(w *http.ResponseWriter, status int, data any) {
+func Success(w *http.ResponseWriter, status int, data interface{}) {
 	meta := Meta{
 		Message: "success",
 	}
