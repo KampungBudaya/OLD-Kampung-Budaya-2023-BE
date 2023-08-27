@@ -1,0 +1,11 @@
+basePath: /api/v1
+host: localhost:8080
+info:
+  contact: {}
+  description: APIs that are used on Kampung Budaya 2023's Festival
+  license:
+    name: Apache 2.0
+  title: Kampung Budaya's API
+  version: "1.0"
+paths: {}
+swagger: "2.0"

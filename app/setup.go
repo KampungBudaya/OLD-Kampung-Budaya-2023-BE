@@ -1,11 +1,13 @@
 package app
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 	"os"
 
 	"github.com/KampungBudaya/Kampung-Budaya-2023-BE/database"
+	_ "github.com/KampungBudaya/Kampung-Budaya-2023-BE/docs"
 	"github.com/KampungBudaya/Kampung-Budaya-2023-BE/util/response"
 	"github.com/gorilla/mux"
 	"github.com/joho/godotenv"
@@ -40,7 +42,10 @@ func Run() error {
 		response.Success(&w, http.StatusOK, "I'm fine and healthy! nice to see you :)")
 	}).Methods(http.MethodGet)
 
-	http.ListenAndServe(":"+port, app)
+	fmt.Println("Server running on port " + port)
+	if err := http.ListenAndServe(":"+port, app); err != nil {
+		return err
+	}
 
 	defer func() {
 		if err := db.Close(); err != nil {

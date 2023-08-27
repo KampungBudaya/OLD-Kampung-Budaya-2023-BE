@@ -17,5 +17,8 @@ migrate-up:
 migrate-down:
 	migrate -database ${DB_DSN} -path ${MIGRATION_DIR} down
 
+migrate-drop:
+	migrate -database ${DB_DSN} -path ${MIGRATION_DIR} drop
+
 migrate-version:
 	migrate -database ${DB_DSN} -path ${MIGRATION_DIR} version
