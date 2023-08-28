@@ -1,7 +1,7 @@
 # Load environment variables from .env file
 include .env
 
-MIGRATION_DIR = ./database/migration
+MIGRATION_DIR = ./domain/migration
 DB_DSN = mysql://${DB_USERNAME}:${DB_PASSWORD}@tcp\(${DB_HOST}:${DB_PORT}\)/${DB_DATABASE}
 
 .PHONY: help migrate-up

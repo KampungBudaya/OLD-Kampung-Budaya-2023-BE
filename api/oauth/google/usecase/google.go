@@ -2,12 +2,12 @@ package usecase
 
 import (
 	"github.com/KampungBudaya/Kampung-Budaya-2023-BE/api/oauth/repository"
-	"github.com/KampungBudaya/Kampung-Budaya-2023-BE/model"
+	"github.com/KampungBudaya/Kampung-Budaya-2023-BE/domain"
 )
 
 type GoogleUsecase interface {
 	Find(id string) error
-	Register(user model.ProviderUserRegister) error
+	Register(user domain.ProviderUserRegister) error
 }
 
 type googleUsecase struct {
@@ -27,7 +27,7 @@ func (g *googleUsecase) Find(id string) error {
 	return nil
 }
 
-func (g *googleUsecase) Register(user model.ProviderUserRegister) error {
+func (g *googleUsecase) Register(user domain.ProviderUserRegister) error {
 	if err := g.oauthRepository.Store(&user); err != nil {
 		return err
 	}

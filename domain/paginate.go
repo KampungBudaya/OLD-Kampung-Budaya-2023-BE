@@ -1,4 +1,4 @@
-package model
+package domain
 
 type PaginateMeta struct {
 	Count  int `json:"count"`

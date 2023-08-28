@@ -15,9 +15,9 @@ func NewGoogleHandler(r *mux.Router, g usecase.GoogleUsecase) {
 	handler := &googleHandler{g}
 
 	oauth := r.PathPrefix("/oauth/google").Subrouter()
-	oauth.HandleFunc("/redirect", handler.RedirectToGoogle)
+	oauth.HandleFunc("/redirect", handler.redirectToGoogle)
 }
 
-func (g *googleHandler) RedirectToGoogle(w http.ResponseWriter, r *http.Request) {
+func (g *googleHandler) redirectToGoogle(w http.ResponseWriter, r *http.Request) {
 
 }
