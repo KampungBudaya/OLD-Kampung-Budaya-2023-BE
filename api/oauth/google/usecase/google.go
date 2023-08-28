@@ -1,1 +1,36 @@
 package usecase
+
+import (
+	"github.com/KampungBudaya/Kampung-Budaya-2023-BE/api/oauth/repository"
+	"github.com/KampungBudaya/Kampung-Budaya-2023-BE/model"
+)
+
+type GoogleUsecase interface {
+	Find(id string) error
+	Register(user model.ProviderUserRegister) error
+}
+
+type googleUsecase struct {
+	oauthRepository repository.OAuthRepository
+}
+
+func NewGoogleUsecase(o repository.OAuthRepository) GoogleUsecase {
+	return &googleUsecase{o}
+}
+
+func (g *googleUsecase) Find(id string) error {
+	_, err := g.oauthRepository.GetByProviderId(id)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (g *googleUsecase) Register(user model.ProviderUserRegister) error {
+	if err := g.oauthRepository.Store(&user); err != nil {
+		return err
+	}
+
+	return nil
+}

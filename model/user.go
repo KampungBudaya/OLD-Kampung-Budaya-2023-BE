@@ -23,3 +23,10 @@ type UserLogin struct {
 	Email    string `json:"email" binding:"required"`
 	Password string `json:"password" binding:"required"`
 }
+
+type ProviderUserRegister struct {
+	Provider   string
+	ProviderId string
+	Username   string
+	Email      string
+}
