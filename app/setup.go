@@ -4,8 +4,12 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+
 	"os"
 
+	fordaHandler "github.com/KampungBudaya/Kampung-Budaya-2023-BE/api/forda/delivery/http"
+	"github.com/KampungBudaya/Kampung-Budaya-2023-BE/api/forda/repository"
+	"github.com/KampungBudaya/Kampung-Budaya-2023-BE/api/forda/usecase"
 	"github.com/KampungBudaya/Kampung-Budaya-2023-BE/database"
 	_ "github.com/KampungBudaya/Kampung-Budaya-2023-BE/docs"
 	"github.com/KampungBudaya/Kampung-Budaya-2023-BE/util/response"
@@ -41,6 +45,10 @@ func Run() error {
 	v1.HandleFunc("/health", func(w http.ResponseWriter, r *http.Request) {
 		response.Success(&w, http.StatusOK, "I'm fine and healthy! nice to see you :)")
 	}).Methods(http.MethodGet)
+
+	fordaRepository := repository.NewFordaRepository(db)
+	fordaUsecase := usecase.NewFordaUsecase(fordaRepository)
+	fordaHandler.NewFordaHandler(v1, fordaUsecase)
 
 	fmt.Println("Server running on port " + port)
 	if err := http.ListenAndServe(":"+port, app); err != nil {
