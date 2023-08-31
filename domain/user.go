@@ -13,20 +13,19 @@ type User struct {
 	UpdatedAt  time.Time
 }
 
-type UserRegister struct {
-	Username string `json:"username" binding:"required"`
-	Email    string `json:"email" binding:"required"`
-	Password string `json:"password" binding:"required"`
-}
-
-type UserLogin struct {
-	Email    string `json:"email" binding:"required"`
-	Password string `json:"password" binding:"required"`
-}
-
 type ProviderUserRegister struct {
 	Provider   string
 	ProviderId string
 	Username   string
 	Email      string
+}
+
+type GoogleUser struct {
+	Id            string
+	Email         string
+	VerifiedEmail bool
+	Name          string
+	GivenName     string
+	Picture       string
+	Locale        string
 }

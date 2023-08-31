@@ -6,6 +6,9 @@ import (
 	"net/http"
 	"os"
 
+	_googleHttpDelivery "github.com/KampungBudaya/Kampung-Budaya-2023-BE/api/oauth/google/delivery/http"
+	_googleUsecase "github.com/KampungBudaya/Kampung-Budaya-2023-BE/api/oauth/google/usecase"
+	_oauthRepository "github.com/KampungBudaya/Kampung-Budaya-2023-BE/api/oauth/repository"
 	"github.com/KampungBudaya/Kampung-Budaya-2023-BE/config"
 	_ "github.com/KampungBudaya/Kampung-Budaya-2023-BE/docs"
 	"github.com/KampungBudaya/Kampung-Budaya-2023-BE/util/response"
@@ -24,6 +27,8 @@ func Run() error {
 		return err
 	}
 
+	googleConf := config.ConfigureGoogleOAuth()
+
 	port := os.Getenv("APP_PORT")
 
 	app := mux.NewRouter()
@@ -41,6 +46,10 @@ func Run() error {
 	v1.HandleFunc("/health", func(w http.ResponseWriter, r *http.Request) {
 		response.Success(&w, http.StatusOK, "I'm fine and healthy! nice to see you :)")
 	}).Methods(http.MethodGet)
+
+	oauthRepo := _oauthRepository.NewOAuthRepository(db)
+	googleUsecase := _googleUsecase.NewGoogleUsecase(oauthRepo)
+	_googleHttpDelivery.NewGoogleHandler(v1, googleUsecase, googleConf)
 
 	fmt.Println("Server running on port " + port)
 	if err := http.ListenAndServe(":"+port, app); err != nil {

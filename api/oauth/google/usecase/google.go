@@ -19,8 +19,8 @@ func NewGoogleUsecase(o repository.OAuthRepository) GoogleUsecase {
 }
 
 func (g *googleUsecase) Find(id string) error {
-	_, err := g.oauthRepository.GetByProviderId(id)
-	if err != nil {
+
+	if _, err := g.oauthRepository.GetByProviderId(id); err != nil {
 		return err
 	}
 
