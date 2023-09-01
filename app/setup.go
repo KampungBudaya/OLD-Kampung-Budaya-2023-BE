@@ -60,7 +60,7 @@ func Run() error {
 	fordaHandler.NewFordaHandler(v1, fordaUsecase)
 
 	fmt.Println("Server running on port " + port)
-	if err := http.ListenAndServe(":"+port, app); err != nil {
+	if err := http.ListenAndServeTLS(":"+port, "server.crt", "server.key", app); err != nil {
 		return err
 	}
 
