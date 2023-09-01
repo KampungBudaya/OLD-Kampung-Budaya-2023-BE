@@ -4,9 +4,10 @@ CREATE TABLE IF NOT EXISTS `users`
     `provider`    VARCHAR(100),
     `provider_id` VARCHAR(255),
 
-    `username`    VARCHAR(255) NOT NULL,
+    `name`        VARCHAR(255) NOT NULL,
     `email`       VARCHAR(255) NOT NULL UNIQUE,
     `password`    VARCHAR(255),
+    `phone`       VARCHAR(13) NOT NULL UNIQUE,
 
     `created_at`  DATETIME     NOT NULL DEFAULT (NOW()),
     `updated_at`  DATETIME     NOT NULL DEFAULT (NOW())
