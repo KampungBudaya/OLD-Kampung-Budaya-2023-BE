@@ -14,7 +14,7 @@ type Meta struct {
 	Message string `json:"message"`
 }
 
-func Success(w *http.ResponseWriter, status int, data interface{}) {
+func Success(w http.ResponseWriter, status int, data interface{}) {
 	meta := Meta{
 		Message: "success",
 	}
@@ -23,10 +23,12 @@ func Success(w *http.ResponseWriter, status int, data interface{}) {
 		Data: data,
 	}
 
-	json.NewEncoder(*w).Encode(res)
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(status)
+	json.NewEncoder(w).Encode(res)
 }
 
-func Fail(w *http.ResponseWriter, status int, errorMessage string) {
+func Fail(w http.ResponseWriter, status int, errorMessage string) {
 	meta := Meta{
 		Message: errorMessage,
 	}
@@ -35,5 +37,7 @@ func Fail(w *http.ResponseWriter, status int, errorMessage string) {
 		Data: nil,
 	}
 
-	json.NewEncoder(*w).Encode(res)
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(status)
+	json.NewEncoder(w).Encode(res)
 }

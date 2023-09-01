@@ -43,7 +43,7 @@ func Run() error {
 	v1 := api.PathPrefix("/v1").Subrouter()
 
 	v1.HandleFunc("/health", func(w http.ResponseWriter, r *http.Request) {
-		response.Success(&w, http.StatusOK, "I'm fine and healthy! nice to see you :)")
+		response.Success(w, http.StatusOK, "I'm fine and healthy! nice to see you :)")
 	}).Methods(http.MethodGet)
 
 	fordaRepository := repository.NewFordaRepository(db)

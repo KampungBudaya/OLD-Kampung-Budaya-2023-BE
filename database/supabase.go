@@ -1,7 +1,6 @@
 package database
 
 import (
-	"errors"
 	"mime/multipart"
 	"os"
 
@@ -18,7 +17,6 @@ func NewSupabaseClient() *Supabase {
 		os.Getenv("SUPABASE_TOKEN"),
 		os.Getenv("SUPABASE_BUCKET"),
 	)
-
 	return &Supabase{
 		supabase: client,
 	}
@@ -35,7 +33,7 @@ func (s *Supabase) UploadFile(file *multipart.FileHeader) (string, error) {
 func (s *Supabase) DeleteFile(link string) error {
 	err := s.supabase.Delete(link)
 	if err != nil {
-		return errors.New("FAILED TO DELETE FILE")
+		return err
 	}
 	return nil
 }

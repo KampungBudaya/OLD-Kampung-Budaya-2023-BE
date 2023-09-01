@@ -3,7 +3,6 @@ package usecase
 import (
 	"context"
 	"fmt"
-	"mime/multipart"
 
 	"github.com/KampungBudaya/Kampung-Budaya-2023-BE/api/forda/repository"
 	"github.com/KampungBudaya/Kampung-Budaya-2023-BE/database"
@@ -15,7 +14,7 @@ import (
 type FordaUsecaseImpl interface {
 	Register(req model.FordaRegister, ctx context.Context) (int64, error)
 	Login(req model.FordaLogin, ctx context.Context) (string, error)
-	UploadPhotoPayment(file *multipart.FileHeader, id int, ctx context.Context) (string, error)
+	UploadPhotoPayment(fileBytes []byte, id int, ctx context.Context) (string, error)
 }
 
 type FordaUsecase struct {
@@ -59,17 +58,17 @@ func (u *FordaUsecase) Login(req model.FordaLogin, ctx context.Context) (string,
 	return token, nil
 }
 
-func (u *FordaUsecase) UploadPhotoPayment(file *multipart.FileHeader, id int, ctx context.Context) (string, error) {
+func (u *FordaUsecase) UploadPhotoPayment(fileBytes []byte, id int, ctx context.Context) (string, error) {
 	var (
 		link string
 		err  error
 	)
 
-	if file == nil {
+	if fileBytes == nil {
 		link = ""
 	} else {
-		supClient := database.NewSupabaseClient()
-		link, err = supClient.UploadFile(file)
+		fb := database.InitFirebase()
+		link, err = fb.UploadFile(ctx, fileBytes, fmt.Sprintf("photo-payment-%d", id))
 		if err != nil {
 			return "", err
 		}

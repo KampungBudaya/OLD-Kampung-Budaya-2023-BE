@@ -13,20 +13,20 @@ func ValidateJWT() http.HandlerFunc {
 		token := r.Header.Get("Authorization")
 
 		if token == "" {
-			response.Fail(&w, http.StatusUnauthorized, "TOKEN NOT FOUND")
+			response.Fail(w, http.StatusUnauthorized, "TOKEN NOT FOUND")
 			return
 		}
 
 		tokens := strings.SplitN(token, " ", 2)
 		if len(tokens) != 2 {
-			response.Fail(&w, http.StatusUnauthorized, "INVALID TOKEN")
+			response.Fail(w, http.StatusUnauthorized, "INVALID TOKEN")
 			return
 		}
 
 		token = tokens[1]
 		claims, err := jwt.ParseJWT(token)
 		if err != nil {
-			response.Fail(&w, http.StatusUnauthorized, err.Error())
+			response.Fail(w, http.StatusUnauthorized, err.Error())
 			return
 		}
 

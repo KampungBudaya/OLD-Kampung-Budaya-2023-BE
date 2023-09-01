@@ -45,10 +45,10 @@ func (h *FordaHandler) Register(w http.ResponseWriter, r *http.Request) {
 
 	defer func() {
 		if err != nil {
-			response.Fail(&w, code, err.Error())
+			response.Fail(w, code, err.Error())
 			return
 		}
-		response.Success(&w, code, data)
+		response.Success(w, code, data)
 	}()
 
 	var request model.FordaRegister
@@ -94,10 +94,10 @@ func (h *FordaHandler) UploadPhotoPayment(w http.ResponseWriter, r *http.Request
 
 	defer func() {
 		if err != nil {
-			response.Fail(&w, code, err.Error())
+			response.Fail(w, code, err.Error())
 			return
 		}
-		response.Success(&w, code, data)
+		response.Success(w, code, data)
 	}()
 
 	vars := mux.Vars(r)
@@ -108,13 +108,15 @@ func (h *FordaHandler) UploadPhotoPayment(w http.ResponseWriter, r *http.Request
 		return
 	}
 
-	var file *multipart.FileHeader
-	_, file, err = r.FormFile("photo-payment")
+	var file multipart.File
+	file, _, err = r.FormFile("photo-payment")
 	if err != nil {
 		file = nil
 	}
 
-	link, err := h.FordaUsecase.UploadPhotoPayment(file, id, ctx)
+	fileBytes, err := io.ReadAll(file)
+
+	link, err := h.FordaUsecase.UploadPhotoPayment(fileBytes, id, ctx)
 	if err != nil {
 		code = http.StatusInternalServerError
 		return
@@ -142,10 +144,10 @@ func (h *FordaHandler) Login(w http.ResponseWriter, r *http.Request) {
 
 	defer func() {
 		if err != nil {
-			response.Fail(&w, code, err.Error())
+			response.Fail(w, code, err.Error())
 			return
 		}
-		response.Success(&w, code, data)
+		response.Success(w, code, data)
 	}()
 
 	var request model.FordaLogin
