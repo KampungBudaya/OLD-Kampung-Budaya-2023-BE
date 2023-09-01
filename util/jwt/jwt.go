@@ -5,11 +5,11 @@ import (
 	"os"
 	"time"
 
-	"github.com/KampungBudaya/Kampung-Budaya-2023-BE/model"
+	"github.com/KampungBudaya/Kampung-Budaya-2023-BE/domain"
 	"github.com/golang-jwt/jwt/v4"
 )
 
-func GenerateJWT(user *model.Forda, role string) (string, error) {
+func GenerateJWT(user *domain.Forda, role string) (string, error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"id":    user.ID,
 		"exp":   time.Now().Add(time.Hour * 24).Unix(),

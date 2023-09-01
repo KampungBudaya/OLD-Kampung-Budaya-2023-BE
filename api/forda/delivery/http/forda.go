@@ -11,7 +11,7 @@ import (
 	"time"
 
 	"github.com/KampungBudaya/Kampung-Budaya-2023-BE/api/forda/usecase"
-	"github.com/KampungBudaya/Kampung-Budaya-2023-BE/model"
+	"github.com/KampungBudaya/Kampung-Budaya-2023-BE/domain"
 	"github.com/KampungBudaya/Kampung-Budaya-2023-BE/util/response"
 	"github.com/gorilla/mux"
 )
@@ -51,7 +51,7 @@ func (h *FordaHandler) Register(w http.ResponseWriter, r *http.Request) {
 		response.Success(w, code, data)
 	}()
 
-	var request model.FordaRegister
+	var request domain.FordaRegister
 
 	body, err := io.ReadAll(r.Body)
 	if err != nil {
@@ -150,7 +150,7 @@ func (h *FordaHandler) Login(w http.ResponseWriter, r *http.Request) {
 		response.Success(w, code, data)
 	}()
 
-	var request model.FordaLogin
+	var request domain.FordaLogin
 	body, err := io.ReadAll(r.Body)
 	if err != nil {
 		code = http.StatusBadRequest

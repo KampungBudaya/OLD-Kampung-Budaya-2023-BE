@@ -10,7 +10,7 @@ import (
 	fordaHandler "github.com/KampungBudaya/Kampung-Budaya-2023-BE/api/forda/delivery/http"
 	"github.com/KampungBudaya/Kampung-Budaya-2023-BE/api/forda/repository"
 	"github.com/KampungBudaya/Kampung-Budaya-2023-BE/api/forda/usecase"
-	"github.com/KampungBudaya/Kampung-Budaya-2023-BE/database"
+	"github.com/KampungBudaya/Kampung-Budaya-2023-BE/config"
 	_ "github.com/KampungBudaya/Kampung-Budaya-2023-BE/docs"
 	"github.com/KampungBudaya/Kampung-Budaya-2023-BE/util/response"
 	"github.com/gorilla/mux"
@@ -23,7 +23,7 @@ func Run() error {
 		return err
 	}
 
-	db, err := database.StartMySQLConn()
+	db, err := config.StartMySQLConn()
 	if err != nil {
 		return err
 	}

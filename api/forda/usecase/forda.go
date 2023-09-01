@@ -5,15 +5,15 @@ import (
 	"fmt"
 
 	"github.com/KampungBudaya/Kampung-Budaya-2023-BE/api/forda/repository"
-	"github.com/KampungBudaya/Kampung-Budaya-2023-BE/database"
-	"github.com/KampungBudaya/Kampung-Budaya-2023-BE/model"
+	"github.com/KampungBudaya/Kampung-Budaya-2023-BE/config"
+	"github.com/KampungBudaya/Kampung-Budaya-2023-BE/domain"
 	"github.com/KampungBudaya/Kampung-Budaya-2023-BE/util/jwt"
 	"github.com/KampungBudaya/Kampung-Budaya-2023-BE/util/password"
 )
 
 type FordaUsecaseImpl interface {
-	Register(req model.FordaRegister, ctx context.Context) (int64, error)
-	Login(req model.FordaLogin, ctx context.Context) (string, error)
+	Register(req domain.FordaRegister, ctx context.Context) (int64, error)
+	Login(req domain.FordaLogin, ctx context.Context) (string, error)
 	UploadPhotoPayment(fileBytes []byte, id int, ctx context.Context) (string, error)
 }
 
@@ -27,7 +27,7 @@ func NewFordaUsecase(fordaRepo repository.FordaRepositoryImpl) FordaUsecaseImpl 
 	}
 }
 
-func (u *FordaUsecase) Register(req model.FordaRegister, ctx context.Context) (int64, error) {
+func (u *FordaUsecase) Register(req domain.FordaRegister, ctx context.Context) (int64, error) {
 	if err := req.Validate(); err != nil {
 		return 0, err
 	}
@@ -39,7 +39,7 @@ func (u *FordaUsecase) Register(req model.FordaRegister, ctx context.Context) (i
 	return id, nil
 }
 
-func (u *FordaUsecase) Login(req model.FordaLogin, ctx context.Context) (string, error) {
+func (u *FordaUsecase) Login(req domain.FordaLogin, ctx context.Context) (string, error) {
 	forda, err := u.FordaRepo.FindByEmail(*req.Email, ctx)
 	if err != nil {
 		fmt.Println(err)
@@ -67,7 +67,7 @@ func (u *FordaUsecase) UploadPhotoPayment(fileBytes []byte, id int, ctx context.
 	if fileBytes == nil {
 		link = ""
 	} else {
-		fb := database.InitFirebase()
+		fb := config.InitFirebase()
 		link, err = fb.UploadFile(ctx, fileBytes, fmt.Sprintf("photo-payment-%d", id))
 		if err != nil {
 			return "", err

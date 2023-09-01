@@ -4,13 +4,13 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/KampungBudaya/Kampung-Budaya-2023-BE/model"
+	"github.com/KampungBudaya/Kampung-Budaya-2023-BE/domain"
 	"github.com/jmoiron/sqlx"
 )
 
 type FordaRepositoryImpl interface {
-	Create(req model.FordaRegister, ctx context.Context) (int64, error)
-	FindByEmail(email string, ctx context.Context) (*model.Forda, error)
+	Create(req domain.FordaRegister, ctx context.Context) (int64, error)
+	FindByEmail(email string, ctx context.Context) (*domain.Forda, error)
 	CreatePhotoPayment(link string, id int, ctx context.Context) (string, error)
 }
 
@@ -24,7 +24,7 @@ func NewFordaRepository(mysql *sqlx.DB) FordaRepositoryImpl {
 	}
 }
 
-func (r *FordaRepository) Create(req model.FordaRegister, ctx context.Context) (int64, error) {
+func (r *FordaRepository) Create(req domain.FordaRegister, ctx context.Context) (int64, error) {
 	res, err := r.mysql.Exec(queryCreateForda, req.Name, req.Email, req.Phone)
 	if err != nil {
 		return 0, err
@@ -37,8 +37,8 @@ func (r *FordaRepository) Create(req model.FordaRegister, ctx context.Context) (
 	return id, err
 }
 
-func (r *FordaRepository) FindByEmail(email string, ctx context.Context) (*model.Forda, error) {
-	var forda model.FordaDB
+func (r *FordaRepository) FindByEmail(email string, ctx context.Context) (*domain.Forda, error) {
+	var forda domain.FordaDB
 	queryFindByEmail := fmt.Sprintf(queryFindForda, "WHERE email = ?")
 	if err := r.mysql.QueryRowx(queryFindByEmail, email).StructScan(&forda); err != nil {
 		return nil, err
@@ -54,8 +54,8 @@ func (r *FordaRepository) CreatePhotoPayment(link string, id int, ctx context.Co
 	return link, nil
 }
 
-func (r *FordaRepository) FindByID(id int, ctx context.Context) (*model.Forda, error) {
-	var forda model.FordaDB
+func (r *FordaRepository) FindByID(id int, ctx context.Context) (*domain.Forda, error) {
+	var forda domain.FordaDB
 	queryFindByID := fmt.Sprintf(queryFindForda, "WHERE id = ?")
 	if err := r.mysql.QueryRowx(queryFindByID, id).StructScan(&forda); err != nil {
 		return nil, err
