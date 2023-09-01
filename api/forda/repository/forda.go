@@ -27,12 +27,12 @@ func NewFordaRepository(mysql *sqlx.DB) FordaRepositoryImpl {
 func (r *FordaRepository) Create(req model.FordaRegister, ctx context.Context) (int64, error) {
 	res, err := r.mysql.Exec(queryCreateForda, req.Name, req.Email, req.Phone)
 	if err != nil {
-		return -1, err
+		return 0, err
 	}
 
 	id, err := res.LastInsertId()
 	if err != nil {
-		return -1, err
+		return 0, err
 	}
 	return id, err
 }

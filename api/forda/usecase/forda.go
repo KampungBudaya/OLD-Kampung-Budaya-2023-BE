@@ -30,12 +30,12 @@ func NewFordaUsecase(fordaRepo repository.FordaRepositoryImpl) FordaUsecaseImpl 
 
 func (u *FordaUsecase) Register(req model.FordaRegister, ctx context.Context) (int64, error) {
 	if err := req.Validate(); err != nil {
-		return -1, err
+		return 0, err
 	}
 
 	id, err := u.FordaRepo.Create(req, ctx)
 	if err != nil {
-		return -1, err
+		return 0, err
 	}
 	return id, nil
 }
