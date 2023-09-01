@@ -86,8 +86,11 @@ func (g *googleHandler) handleCallback(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := g.googleUsecase.Find(user.Id); err != nil {
+	jwtToken, err := g.googleUsecase.Login(user.Id)
+	if err != nil {
 		response.Fail(w, http.StatusUnauthorized, "User does NOT exists in the system")
 		return
 	}
+
+	response.Success(w, http.StatusOK, struct{ token string }{token: jwtToken})
 }

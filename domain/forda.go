@@ -2,20 +2,21 @@ package domain
 
 import (
 	"errors"
+	"time"
 
 	"github.com/KampungBudaya/Kampung-Budaya-2023-BE/util/validator"
 )
 
 type Forda struct {
-	ID         int     `json:"id"`
-	Provider   string  `json:"provider"`
-	ProviderID string  `json:"provider_id"`
-	Name       string  `json:"name"`
-	Email      string  `json:"email"`
-	Password   string  `json:"password"`
-	Phone      string  `json:"phone"`
-	CreateAt   []uint8 `json:"created_at"`
-	UpdateAt   []uint8 `json:"updated_at"`
+	ID         int       `json:"id"`
+	Provider   string    `json:"provider"`
+	ProviderID string    `json:"provider_id"`
+	Name       string    `json:"name"`
+	Email      string    `json:"email"`
+	Password   string    `json:"password"`
+	Phone      string    `json:"phone"`
+	CreateAt   time.Time `json:"created_at"`
+	UpdateAt   time.Time `json:"updated_at"`
 }
 
 type FordaRegister struct {
@@ -53,15 +54,15 @@ func (f *FordaLogin) Validate() error {
 }
 
 type FordaDB struct {
-	ID         int     `db:"id"`
-	Provider   *string `db:"provider"`
-	ProviderID *string `db:"provider_id"`
-	Name       string  `db:"name"`
-	Email      string  `db:"email"`
-	Password   string  `db:"password"`
-	Phone      string  `db:"phone"`
-	CreateAt   []uint8 `db:"created_at"`
-	UpdateAt   []uint8 `db:"updated_at"`
+	ID         int       `db:"id"`
+	Provider   *string   `db:"provider"`
+	ProviderID *string   `db:"provider_id"`
+	Name       string    `db:"name"`
+	Email      string    `db:"email"`
+	Password   string    `db:"password"`
+	Phone      string    `db:"phone"`
+	CreateAt   time.Time `db:"created_at"`
+	UpdateAt   time.Time `db:"updated_at"`
 }
 
 func (fdb *FordaDB) Formatting() *Forda {

@@ -3,10 +3,11 @@ package usecase
 import (
 	"github.com/KampungBudaya/Kampung-Budaya-2023-BE/api/oauth/repository"
 	"github.com/KampungBudaya/Kampung-Budaya-2023-BE/domain"
+	"github.com/KampungBudaya/Kampung-Budaya-2023-BE/util/jwt"
 )
 
 type GoogleUsecase interface {
-	Find(id string) error
+	Login(id string) (string, error)
 	Register(user domain.ProviderUserRegister) error
 }
 
@@ -18,13 +19,29 @@ func NewGoogleUsecase(o repository.OAuthRepository) GoogleUsecase {
 	return &googleUsecase{o}
 }
 
-func (g *googleUsecase) Find(id string) error {
+func (g *googleUsecase) Login(id string) (string, error) {
 
-	if _, err := g.oauthRepository.GetByProviderId(id); err != nil {
-		return err
+	user, err := g.oauthRepository.GetByProviderId(id)
+	if err != nil {
+		return "", err
 	}
 
-	return nil
+	forda := &domain.Forda{
+		ID:         user.Id,
+		Provider:   user.Provider,
+		ProviderID: user.ProviderId,
+		Name:       user.Username,
+		Email:      user.Email,
+		Password:   user.Password,
+		CreateAt:   user.CreatedAt,
+	}
+
+	token, err := jwt.GenerateJWT(forda, "Admin")
+	if err != nil {
+		return "", err
+	}
+
+	return token, nil
 }
 
 func (g *googleUsecase) Register(user domain.ProviderUserRegister) error {
