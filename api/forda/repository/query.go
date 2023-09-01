@@ -16,7 +16,7 @@ const queryCreateForda = `
 
 const queryCreatePhoto = `
 	INSERT INTO
-		photos
+		payment_photos
 	(
 		link_photo,
 		user_id
