@@ -41,9 +41,11 @@ func (f *Firebase) UploadFile(ctx context.Context, file []byte, fileName string)
 	if _, err = wc.Write(file); err != nil {
 		return "", err
 	}
+
 	if err := wc.Close(); err != nil {
 		return "", err
 	}
+
 	_, err = bucket.Object(fileName).Attrs(ctx)
 	if err != nil {
 		return "", err
