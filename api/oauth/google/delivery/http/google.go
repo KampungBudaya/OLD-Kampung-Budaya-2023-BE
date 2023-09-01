@@ -27,8 +27,8 @@ func NewGoogleHandler(r *mux.Router, g usecase.GoogleUsecase, o *oauth2.Config) 
 	}
 
 	oauth := r.PathPrefix("/oauth/google").Subrouter()
-	oauth.HandleFunc("/redirect", handler.redirect)
-	oauth.HandleFunc("/callback", handler.handleCallback)
+	oauth.HandleFunc("/redirect", handler.redirect).Methods(http.MethodGet)
+	oauth.HandleFunc("/callback", handler.handleCallback).Methods(http.MethodGet)
 }
 
 func (g *googleHandler) redirect(w http.ResponseWriter, r *http.Request) {
