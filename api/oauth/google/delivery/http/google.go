@@ -45,21 +45,21 @@ func (g *googleHandler) redirect(w http.ResponseWriter, r *http.Request) {
 func (g *googleHandler) handleCallback(w http.ResponseWriter, r *http.Request) {
 	stateCookie, err := r.Cookie("state")
 	if err != nil {
-		response.Fail(&w, http.StatusBadRequest, "State cookie does not exist!")
+		response.Fail(w, http.StatusBadRequest, "State cookie does not exist!")
 		return
 	}
 
 	stateForm := r.FormValue("state")
 
 	if stateCookie.Value != stateForm {
-		response.Fail(&w, http.StatusBadRequest, "State cookie has been tampered!")
+		response.Fail(w, http.StatusBadRequest, "State cookie has been tampered!")
 		return
 	}
 
 	code := r.FormValue("code")
 	token, err := g.googleOAuth.Exchange(context.Background(), code)
 	if err != nil {
-		response.Fail(&w, http.StatusUnauthorized, "Failed to exchange authorization token")
+		response.Fail(w, http.StatusUnauthorized, "Failed to exchange authorization token")
 	}
 
 	oauthGoogleUrlAPI := "https://www.googleapis.com/oauth2/v2/userinfo?access_token="
@@ -67,7 +67,7 @@ func (g *googleHandler) handleCallback(w http.ResponseWriter, r *http.Request) {
 	client := g.googleOAuth.Client(context.Background(), token)
 	resp, err := client.Get(oauthGoogleUrlAPI + token.AccessToken)
 	if err != nil {
-		response.Fail(&w, http.StatusForbidden, "Code-Token Resource Exchange Failed")
+		response.Fail(w, http.StatusForbidden, "Code-Token Resource Exchange Failed")
 		return
 	}
 
@@ -75,19 +75,19 @@ func (g *googleHandler) handleCallback(w http.ResponseWriter, r *http.Request) {
 
 	data, err := io.ReadAll(resp.Body)
 	if err != nil {
-		response.Fail(&w, http.StatusInternalServerError, "Fail to read resource body")
+		response.Fail(w, http.StatusInternalServerError, "Fail to read resource body")
 		return
 	}
 
 	var user domain.GoogleUser
 
 	if err := json.Unmarshal(data, &user); err != nil {
-		response.Fail(&w, http.StatusInternalServerError, "Fail to Unmarshal User Data")
+		response.Fail(w, http.StatusInternalServerError, "Fail to Unmarshal User Data")
 		return
 	}
 
 	if err := g.googleUsecase.Find(user.Id); err != nil {
-		response.Fail(&w, http.StatusUnauthorized, "User does NOT exists in the system")
+		response.Fail(w, http.StatusUnauthorized, "User does NOT exists in the system")
 		return
 	}
 }
