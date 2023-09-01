@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS `photos`
+CREATE TABLE IF NOT EXISTS `payment_photos`
 (
     `id`          INT PRIMARY KEY AUTO_INCREMENT,
     `link_photo`  VARCHAR(255),

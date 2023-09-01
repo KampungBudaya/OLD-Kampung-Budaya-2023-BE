@@ -31,6 +31,7 @@ func NewFordaHandler(router *mux.Router, fordaUsecase usecase.FordaUsecaseImpl) 
 	handler.Router.HandleFunc("/register", handler.Register).Methods(http.MethodPost)
 	handler.Router.HandleFunc("/login", handler.Login).Methods(http.MethodPost)
 	handler.Router.HandleFunc("/upload-photo-payment/{id}", handler.UploadPhotoPayment).Methods(http.MethodPost)
+	handler.Router.HandleFunc("/forda", handler.GetAllForda).Methods(http.MethodGet)
 }
 
 func (h *FordaHandler) Register(w http.ResponseWriter, r *http.Request) {
@@ -51,7 +52,7 @@ func (h *FordaHandler) Register(w http.ResponseWriter, r *http.Request) {
 		response.Success(w, code, data)
 	}()
 
-	var request model.FordaRegister
+	var request model.UserRegister
 
 	body, err := io.ReadAll(r.Body)
 	if err != nil {
@@ -150,7 +151,7 @@ func (h *FordaHandler) Login(w http.ResponseWriter, r *http.Request) {
 		response.Success(w, code, data)
 	}()
 
-	var request model.FordaLogin
+	var request model.UserLogin
 	body, err := io.ReadAll(r.Body)
 	if err != nil {
 		code = http.StatusBadRequest
@@ -165,6 +166,10 @@ func (h *FordaHandler) Login(w http.ResponseWriter, r *http.Request) {
 	}
 
 	forda, err := h.FordaUsecase.Login(request, ctx)
+	if err != nil {
+		code = http.StatusInternalServerError
+		return
+	}
 
 	select {
 	case <-ctx.Done():
@@ -173,5 +178,38 @@ func (h *FordaHandler) Login(w http.ResponseWriter, r *http.Request) {
 		return
 	default:
 		data = forda
+	}
+}
+
+func (h *FordaHandler) GetAllForda(w http.ResponseWriter, r *http.Request) {
+	ctx, cancel := context.WithTimeout(r.Context(), 15*time.Second)
+	defer cancel()
+
+	var (
+		err  error
+		code = http.StatusOK
+		data interface{}
+	)
+
+	defer func() {
+		if err != nil {
+			response.Fail(w, code, err.Error())
+			return
+		}
+		response.Success(w, code, data)
+	}()
+
+	fordas, err := h.FordaUsecase.GetAll(ctx)
+	if err != nil {
+		code = http.StatusInternalServerError
+		return
+	}
+
+	select {
+	case <-ctx.Done():
+		code = http.StatusRequestTimeout
+		err = errors.New(reqTO)
+	default:
+		data = fordas
 	}
 }

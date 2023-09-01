@@ -12,9 +12,10 @@ import (
 )
 
 type FordaUsecaseImpl interface {
-	Register(req model.FordaRegister, ctx context.Context) (int64, error)
-	Login(req model.FordaLogin, ctx context.Context) (string, error)
+	Register(req model.UserRegister, ctx context.Context) (int64, error)
+	Login(req model.UserLogin, ctx context.Context) (string, error)
 	UploadPhotoPayment(fileBytes []byte, id int, ctx context.Context) (string, error)
+	GetAll(ctx context.Context) ([]*model.User, error)
 }
 
 type FordaUsecase struct {
@@ -27,7 +28,7 @@ func NewFordaUsecase(fordaRepo repository.FordaRepositoryImpl) FordaUsecaseImpl 
 	}
 }
 
-func (u *FordaUsecase) Register(req model.FordaRegister, ctx context.Context) (int64, error) {
+func (u *FordaUsecase) Register(req model.UserRegister, ctx context.Context) (int64, error) {
 	if err := req.Validate(); err != nil {
 		return 0, err
 	}
@@ -39,7 +40,7 @@ func (u *FordaUsecase) Register(req model.FordaRegister, ctx context.Context) (i
 	return id, nil
 }
 
-func (u *FordaUsecase) Login(req model.FordaLogin, ctx context.Context) (string, error) {
+func (u *FordaUsecase) Login(req model.UserLogin, ctx context.Context) (string, error) {
 	forda, err := u.FordaRepo.FindByEmail(*req.Email, ctx)
 	if err != nil {
 		fmt.Println(err)
@@ -79,4 +80,13 @@ func (u *FordaUsecase) UploadPhotoPayment(fileBytes []byte, id int, ctx context.
 		return "", err
 	}
 	return link, nil
+}
+
+func (u *FordaUsecase) GetAll(ctx context.Context) ([]*model.User, error) {
+	fordas, err := u.FordaRepo.FindAll(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	return fordas, nil
 }
