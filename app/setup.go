@@ -31,6 +31,12 @@ func Run() error {
 		return err
 	}
 
+	defer func() {
+		if err := db.Close(); err != nil {
+			log.Fatalln(err.Error())
+		}
+	}()
+
 	googleConf := config.ConfigureGoogleOAuth()
 
 	port := os.Getenv("APP_PORT")
@@ -63,12 +69,6 @@ func Run() error {
 	if err := http.ListenAndServeTLS(":"+port, "server.crt", "server.key", app); err != nil {
 		return err
 	}
-
-	defer func() {
-		if err := db.Close(); err != nil {
-			log.Fatalln(err.Error())
-		}
-	}()
 
 	return nil
 }

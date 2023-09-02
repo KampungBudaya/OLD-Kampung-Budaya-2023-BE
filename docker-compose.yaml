@@ -1,0 +1,51 @@
+version: "3.9"
+
+networks:
+  app-net:
+    driver: bridge
+
+services:
+  db:
+    env_file:
+      - .env
+    image: rapidfort/mariadb:10.4
+    container_name: kambud23_db
+    environment:
+      - MARIADB_ROOT_PASSWORD=${DB_PASSWORD}
+      - MARIADB_DATABASE=${DB_DATABASE}
+    networks:
+      - app-net
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "mysqladmin",
+          "ping",
+          "-h",
+          "localhost",
+          "-u",
+          "${DB_USERNAME}",
+          "-p${DB_PASSWORD}"
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    env_file:
+      - .env
+    build: .
+    ports:
+      - "${DOCKER_PORT}:${APP_PORT}"
+    environment:
+      - DB_HOST=db
+      - DB_PORT=${DB_PORT}
+      - DB_DATABASE=${DB_DATABASE}
+      - DB_USERNAME=${DB_USERNAME}
+      - DB_PASSWORD=${DB_PASSWORD}
+    depends_on:
+      db:
+        condition: service_healthy
+    container_name: kambud23_be
+    networks:
+      - app-net
