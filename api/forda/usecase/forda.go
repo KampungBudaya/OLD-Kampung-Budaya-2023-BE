@@ -2,13 +2,17 @@ package usecase
 
 import (
 	"context"
+	"errors"
 	"fmt"
+	"os"
 
 	"github.com/KampungBudaya/Kampung-Budaya-2023-BE/api/forda/repository"
 	"github.com/KampungBudaya/Kampung-Budaya-2023-BE/database"
 	"github.com/KampungBudaya/Kampung-Budaya-2023-BE/model"
+	"github.com/KampungBudaya/Kampung-Budaya-2023-BE/util/email"
 	"github.com/KampungBudaya/Kampung-Budaya-2023-BE/util/jwt"
 	"github.com/KampungBudaya/Kampung-Budaya-2023-BE/util/password"
+	petname "github.com/dustinkirkland/golang-petname"
 )
 
 type FordaUsecaseImpl interface {
@@ -16,6 +20,8 @@ type FordaUsecaseImpl interface {
 	Login(req model.UserLogin, ctx context.Context) (string, error)
 	UploadPhotoPayment(fileBytes []byte, id int, ctx context.Context) (string, error)
 	GetAll(ctx context.Context) ([]*model.User, error)
+	GetByID(id int, ctx context.Context) (*model.User, error)
+	AcceptForda(id int, ctx context.Context) error
 }
 
 type FordaUsecase struct {
@@ -89,4 +95,48 @@ func (u *FordaUsecase) GetAll(ctx context.Context) ([]*model.User, error) {
 	}
 
 	return fordas, nil
+}
+
+func (u *FordaUsecase) GetByID(id int, ctx context.Context) (*model.User, error) {
+	forda, err := u.FordaRepo.FindByID(id, ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	return forda, nil
+}
+
+func (u *FordaUsecase) AcceptForda(id int, ctx context.Context) error {
+	forda, err := u.FordaRepo.FindByID(id, ctx)
+	if err != nil {
+		return err
+	}
+
+	if forda.Password == "" {
+		return errors.New("FORDA ALREADY ACCEPTED")
+	}
+
+	pass := petname.Generate(2, "")
+
+	hashedPass, err := password.HashingPassword(pass)
+	if err != nil {
+		return err
+	}
+
+	err = u.FordaRepo.UpdatePassword(hashedPass, id, ctx)
+	if err != nil {
+		return err
+	}
+
+	reciever := []string{forda.Email, "ITKampungBudaya@gmail.com"}
+
+	mail := email.NewMailClient()
+	mail.SetSubject("Verification Email")
+	mail.SetReciever(reciever...)
+	mail.SetSender(os.Getenv("CONFIG_SENDER_NAME"))
+	mail.SetBodyHTML(forda.Email, pass)
+	if err := mail.SendMail(); err != nil {
+		return err
+	}
+	return nil
 }

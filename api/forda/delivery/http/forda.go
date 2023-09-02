@@ -8,6 +8,7 @@ import (
 	"mime/multipart"
 	"net/http"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/KampungBudaya/Kampung-Budaya-2023-BE/api/forda/usecase"
@@ -17,6 +18,7 @@ import (
 )
 
 const reqTO = "REQUEST TIMEOUT"
+const errConvert = "FAILED TO CONVERT STRING TO INTEGER"
 
 type FordaHandler struct {
 	Router       *mux.Router
@@ -32,6 +34,8 @@ func NewFordaHandler(router *mux.Router, fordaUsecase usecase.FordaUsecaseImpl) 
 	handler.Router.HandleFunc("/login", handler.Login).Methods(http.MethodPost)
 	handler.Router.HandleFunc("/upload-photo-payment/{id}", handler.UploadPhotoPayment).Methods(http.MethodPost)
 	handler.Router.HandleFunc("/forda", handler.GetAllForda).Methods(http.MethodGet)
+	handler.Router.HandleFunc("/forda/{id}", handler.GetFordaByID).Methods(http.MethodGet)
+	handler.Router.HandleFunc("/forda/{id}", handler.AcceptForda).Methods(http.MethodPatch)
 }
 
 func (h *FordaHandler) Register(w http.ResponseWriter, r *http.Request) {
@@ -104,7 +108,7 @@ func (h *FordaHandler) UploadPhotoPayment(w http.ResponseWriter, r *http.Request
 	vars := mux.Vars(r)
 	id, err := strconv.Atoi(vars["id"])
 	if err != nil {
-		err = errors.New("FAILED TO CONVERT STRING TO INTEGER")
+		err = errors.New(errConvert)
 		code = http.StatusBadRequest
 		return
 	}
@@ -199,6 +203,21 @@ func (h *FordaHandler) GetAllForda(w http.ResponseWriter, r *http.Request) {
 		response.Success(w, code, data)
 	}()
 
+	roles := strings.Split(r.Header.Get("role"), " ")
+	isAdmin := false
+	for _, role := range roles {
+		if role == "admin" {
+			isAdmin = true
+			break
+		}
+	}
+
+	if !isAdmin {
+		code = http.StatusUnauthorized
+		err = errors.New("UNAUTHORIZED")
+		return
+	}
+
 	fordas, err := h.FordaUsecase.GetAll(ctx)
 	if err != nil {
 		code = http.StatusInternalServerError
@@ -211,5 +230,117 @@ func (h *FordaHandler) GetAllForda(w http.ResponseWriter, r *http.Request) {
 		err = errors.New(reqTO)
 	default:
 		data = fordas
+	}
+}
+
+func (h *FordaHandler) GetFordaByID(w http.ResponseWriter, r *http.Request) {
+	ctx, cancel := context.WithTimeout(r.Context(), 15*time.Second)
+	defer cancel()
+
+	var (
+		err  error
+		code = http.StatusOK
+		data interface{}
+	)
+
+	defer func() {
+		if err != nil {
+			response.Fail(w, code, err.Error())
+			return
+		}
+		response.Success(w, code, data)
+	}()
+
+	roles := strings.Split(r.Header.Get("role"), " ")
+	isAdmin := false
+	for _, role := range roles {
+		if role == "admin" {
+			isAdmin = true
+			break
+		}
+	}
+
+	if !isAdmin {
+		code = http.StatusUnauthorized
+		err = errors.New("UNAUTHORIZED")
+		return
+	}
+
+	vars := mux.Vars(r)
+	id, err := strconv.Atoi(vars["id"])
+	if err != nil {
+		err = errors.New(errConvert)
+		code = http.StatusBadRequest
+		return
+	}
+
+	forda, err := h.FordaUsecase.GetByID(id, ctx)
+	if err != nil {
+		code = http.StatusInternalServerError
+		return
+	}
+
+	select {
+	case <-ctx.Done():
+		code = http.StatusRequestTimeout
+		err = errors.New(reqTO)
+	default:
+		data = forda
+	}
+}
+
+func (h *FordaHandler) AcceptForda(w http.ResponseWriter, r *http.Request) {
+	ctx, cancel := context.WithTimeout(r.Context(), 15*time.Second)
+	defer cancel()
+
+	var (
+		err  error
+		code = http.StatusOK
+		data interface{}
+	)
+
+	defer func() {
+		if err != nil {
+			response.Fail(w, code, err.Error())
+			return
+		}
+		response.Success(w, code, data)
+	}()
+
+	roles := strings.Split(r.Header.Get("role"), " ")
+	isAdmin := false
+	for _, role := range roles {
+		if role == "admin" {
+			isAdmin = true
+			break
+		}
+	}
+
+	if !isAdmin {
+		code = http.StatusUnauthorized
+		err = errors.New("UNAUTHORIZED")
+		return
+	}
+
+	vars := mux.Vars(r)
+	id, err := strconv.Atoi(vars["id"])
+	if err != nil {
+		err = errors.New(errConvert)
+		code = http.StatusBadRequest
+		return
+	}
+
+	if err = h.FordaUsecase.AcceptForda(id, r.Context()); err != nil {
+		code = http.StatusInternalServerError
+		return
+	}
+
+	select {
+	case <-ctx.Done():
+		code = http.StatusRequestTimeout
+		err = errors.New(reqTO)
+		return
+	default:
+		data = "SUCCESS ACCEPT FORDA"
 	}
 }

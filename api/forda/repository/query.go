@@ -41,5 +41,14 @@ const queryFindForda = `
 	FROM
 		users
 	LEFT JOIN payment_photos ON users.id = payment_photos.user_id
-	%s
+		%s
+`
+
+const queryUpdatePassword = `
+	UPDATE
+		users
+	SET
+		users.password = ?
+	WHERE
+		users.id = ?
 `

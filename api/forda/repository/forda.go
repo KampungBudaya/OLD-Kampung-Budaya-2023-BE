@@ -14,6 +14,7 @@ type FordaRepositoryImpl interface {
 	CreatePhotoPayment(link string, id int, ctx context.Context) (string, error)
 	FindByID(id int, ctx context.Context) (*model.User, error)
 	FindAll(ctx context.Context) ([]*model.User, error)
+	UpdatePassword(password string, id int, ctx context.Context) error
 }
 
 type FordaRepository struct {
@@ -58,7 +59,7 @@ func (r *FordaRepository) CreatePhotoPayment(link string, id int, ctx context.Co
 
 func (r *FordaRepository) FindByID(id int, ctx context.Context) (*model.User, error) {
 	var forda model.UserDB
-	queryFindByID := fmt.Sprintf(queryFindForda, "WHERE id = ?")
+	queryFindByID := fmt.Sprintf(queryFindForda, "WHERE users.id = ?")
 	if err := r.mysql.QueryRowx(queryFindByID, id).StructScan(&forda); err != nil {
 		return nil, err
 	}
@@ -86,6 +87,13 @@ func (r *FordaRepository) FindAll(ctx context.Context) ([]*model.User, error) {
 	if rows.Err() != nil {
 		return nil, err
 	}
-
 	return fordas, nil
+}
+
+func (r *FordaRepository) UpdatePassword(password string, id int, ctx context.Context) error {
+	_, err := r.mysql.Exec(queryUpdatePassword, password, id)
+	if err != nil {
+		return err
+	}
+	return nil
 }

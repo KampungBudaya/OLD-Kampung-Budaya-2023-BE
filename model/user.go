@@ -62,20 +62,19 @@ type UserDB struct {
 	Email        string    `db:"email"`
 	Password     *string   `db:"password"`
 	Phone        string    `db:"phone"`
-	PaymentPhoto string    `db:"link_photo"`
+	PaymentPhoto *string   `db:"link_photo"`
 	CreateAt     time.Time `db:"created_at"`
 	UpdateAt     time.Time `db:"updated_at"`
 }
 
 func (fdb *UserDB) Formatting() *User {
 	user := User{
-		ID:           fdb.ID,
-		Name:         fdb.Name,
-		Email:        fdb.Email,
-		Phone:        fdb.Phone,
-		PaymentPhoto: fdb.PaymentPhoto,
-		CreateAt:     fdb.CreateAt,
-		UpdateAt:     fdb.UpdateAt,
+		ID:       fdb.ID,
+		Name:     fdb.Name,
+		Email:    fdb.Email,
+		Phone:    fdb.Phone,
+		CreateAt: fdb.CreateAt,
+		UpdateAt: fdb.UpdateAt,
 	}
 
 	if fdb.Provider != nil {
@@ -88,6 +87,10 @@ func (fdb *UserDB) Formatting() *User {
 
 	if fdb.Password != nil {
 		user.Password = *fdb.Password
+	}
+
+	if fdb.PaymentPhoto != nil {
+		user.PaymentPhoto = *fdb.PaymentPhoto
 	}
 	return &user
 }
